@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-Powered Telehealth & Remote Healthcare Platform</title>
+  <meta name="description" content="AI-driven telehealth: video consults, wearables, symptom checker, e-prescriptions, multi-language, low-bandwidth mode." />
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: #0f172a;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --brand: #22c55e;
+      --brand-2: #06b6d4;
+      --danger: #ef4444;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:linear-gradient(180deg,#0b1220 0%,#0d1426 100%);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.7);backdrop-filter:blur(10px);border-bottom:1px solid rgba(148,163,184,.12)}
+    nav{display:flex;align-items:center;gap:16px;justify-content:space-between}
+
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo-badge{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;box-shadow:var(--shadow)}
+
+    .nav-links{display:flex;gap:14px;flex-wrap:wrap}
+    .nav-links a{padding:8px 12px;border-radius:999px;border:1px solid rgba(148,163,184,.15);color:var(--muted)}
+    .nav-links a.active,.nav-links a:hover{border-color:rgba(34,197,94,.45);color:#d1fae5}
+
+    .toolbar{display:flex;gap:8px;align-items:center}
+    .btn{border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.7);padding:10px 14px;border-radius:12px;color:var(--text);cursor:pointer;transition:.2s;box-shadow:0 2px 0 rgba(255,255,255,.04) inset}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(34,197,94,.5)}
+    .btn.primary{background:linear-gradient(135deg,rgba(34,197,94,.9),rgba(6,182,212,.9));border:none}
+    .chip{padding:6px 10px;border-radius:999px;border:1px dashed rgba(148,163,184,.35);color:var(--muted);font-size:12px}
+
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;padding:40px 0}
+    .card{background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(11,18,32,.95));border:1px solid rgba(148,163,184,.12);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card.pad{padding:22px}
+
+    h1{font-size:40px;line-height:1.1;margin:8px 0 16px}
+    h2{font-size:26px;margin:0 0 10px}
+    p.lead{color:#cbd5e1;font-size:16px}
+
+    .grid{display:grid;gap:16px}
+    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    .grid.cols-2{grid-template-columns:repeat(2,1fr)}
+    .feature{padding:16px;border-radius:14px;border:1px solid rgba(148,163,184,.12);background:rgba(2,6,23,.35)}
+    .muted{color:var(--muted)}
+
+    .kbd{border:1px solid rgba(148,163,184,.25);border-bottom-width:3px;padding:2px 6px;border-radius:8px;font-size:12px;color:#e5e7eb}
+
+    /* Sections */
+    section{padding:26px 0}
+    section .title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .title .dot{width:9px;height:9px;border-radius:999px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 0 20px rgba(34,197,94,.6)}
+
+    /* Forms & inputs */
+    .row{display:grid;gap:12px}
+    .row.cols-2{grid-template-columns:repeat(2,1fr)}
+    label{font-size:12px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:12px 12px;border-radius:12px;background:#0b1220;border:1px solid rgba(148,163,184,.22);color:var(--text)}
+    textarea{min-height:90px}
+
+    /* Status badges */
+    .badge{font-size:12px;padding:6px 8px;border-radius:8px;border:1px solid rgba(148,163,184,.2)}
+    .ok{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4)}
+    .warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.5)}
+    .danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.5)}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .modal .panel{max-width:720px;width:100%}
+
+    /* Footer */
+    footer{padding:28px 0;color:var(--muted);border-top:1px solid rgba(148,163,184,.12)}
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+      .grid.cols-3{grid-template-columns:1fr}
+      .row.cols-2{grid-template-columns:1fr}
+    }
+    .hidden{display:none!important}
+
+    /* SOS pulse */
+    .pulse{position:relative}
+    .pulse::after{content:"";position:absolute;inset:-6px;border:2px solid var(--danger);border-radius:12px;opacity:.5;animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{transform:scale(.95);opacity:.5}70%{transform:scale(1.05);opacity:.1}100%{transform:scale(.95);opacity:.5}}
+
+    /* Simple toast */
+    .toast{position:fixed;bottom:18px;right:18px;background:#0b1220;border:1px solid rgba(148,163,184,.3);padding:12px 14px;border-radius:12px;color:#e5e7eb;box-shadow:var(--shadow);display:none}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <div class="logo-badge" aria-hidden="true">💚</div>
+        <span>Telehealth<span class="muted">.AI</span></span>
+      </div>
+      <div class="nav-links">
+        <a href="#home" class="active" data-nav>Home</a>
+        <a href="#features" data-nav>Features</a>
+        <a href="#consult" data-nav>Consult</a>
+        <a href="#symptom" data-nav>Symptom Checker</a>
+        <a href="#wallet" data-nav>Health Wallet</a>
+        <a href="#admin" data-nav>Admin</a>
+      </div>
+      <div class="toolbar">
+        <select id="lang" class="btn" aria-label="Language">
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+          <option value="te">తెలుగు</option>
+        </select>
+        <button id="lowBandwidth" class="btn" title="Low-bandwidth mode" data-i18n="low_bandwidth">Low Bandwidth</button>
+        <button id="sos" class="btn pulse" style="border-color:rgba(239,68,68,.6)" data-i18n="sos">SOS</button>
+        <button id="loginBtn" class="btn primary" data-i18n="login">Login</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="card pad">
+      <div class="chip" data-i18n="chip_access">Accessible • Secure • AI‑Driven</div>
+      <h1 data-i18n="hero_title">Healthcare that reaches you — wherever you are.</h1>
+      <p class="lead" data-i18n="hero_body">Video consults, real‑time vitals from wearables, AI symptom checks, e‑prescriptions, and a secure health wallet — built for cities and villages alike.</p>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn primary" onclick="openConsult()" data-i18n="cta_consult">Start Consultation</button>
+        <button class="btn" onclick="goto('#symptom')" data-i18n="cta_checker">Try Symptom Checker</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;align-items:center">
+        <span class="badge ok" data-i18n="badge_secure">End‑to‑End Encrypted</span>
+        <span class="badge warn" data-i18n="badge_low">Optimized for Low Bandwidth</span>
+        <span class="badge" title="HIPAA/GDPR" data-i18n="badge_compliance">HIPAA/GDPR‑aware UI</span>
+      </div>
+    </div>
+    <div class="card pad" aria-live="polite">
+      <h2 data-i18n="vitals_title">Live Vitals (Demo)</h2>
+      <canvas id="vitals" height="180" style="width:100%;border-radius:12px;background:#0b1220;border:1px solid rgba(148,163,184,.2)"></canvas>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <span class="badge ok">HR <span id="hr">72</span>bpm</span>
+        <span class="badge warn">SpO₂ <span id="spo2">98</span>%</span>
+        <span class="badge">BP <span id="bp">118/76</span></span>
+      </div>
+      <p class="muted" style="margin-top:8px" data-i18n="vitals_note">Connected to Google Fit / HealthKit / IoT (simulated).</p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="title"><span class="dot"></span><h2 data-i18n="features">Key Highlights</h2></div>
+    <div class="grid cols-3">
+      <div class="feature"><h3>🔒 <span data-i18n="f_secure">Secure Video & Audio</span></h3><p class="muted" data-i18n="f_secure_d">Remote consults with encrypted calls.</p></div>
+      <div class="feature"><h3>⌚ <span data-i18n="f_wear">Wearables & IoT</span></h3><p class="muted" data-i18n="f_wear_d">Sync Google Fit, HealthKit, Fitbit, medical devices.</p></div>
+      <div class="feature"><h3>🤖 <span data-i18n="f_ai">AI Symptom & Risk</span></h3><p class="muted" data-i18n="f_ai_d">Early alerts and prevention insights.</p></div>
+      <div class="feature"><h3>🌐 <span data-i18n="f_multi">Multi‑Platform</span></h3><p class="muted" data-i18n="f_multi_d">Web + Android + iOS. Works on 2G/3G.</p></div>
+      <div class="feature"><h3>🚨 <span data-i18n="f_sos">Emergency SOS</span></h3><p class="muted" data-i18n="f_sos_d">Auto alerts on abnormal vitals.</p></div>
+      <div class="feature"><h3>💊 <span data-i18n="f_rx">E‑Prescriptions</span></h3><p class="muted" data-i18n="f_rx_d">QR‑enabled Rx & secure health wallet.</p></div>
+    </div>
+  </section>
+
+  <!-- CONSULT -->
+  <section id="consult">
+    <div class="title"><span class="dot"></span><h2 data-i18n="consult_title">Virtual Consultation</h2></div>
+    <div class="grid cols-2">
+      <div class="card pad">
+        <h3 data-i18n="consult_patient">Patient Booking</h3>
+        <div class="row cols-2">
+          <div><label data-i18n="l_name">Full Name</label><input id="pName" placeholder="e.g., Asha Rao" /></div>
+          <div><label data-i18n="l_age">Age</label><input id="pAge" type="number" min="0" placeholder="29" /></div>
+          <div><label data-i18n="l_dept">Speciality</label>
+            <select id="pDept">
+              <option>General Physician</option><option>Cardiologist</option><option>Dermatologist</option><option>Pediatrics</option>
+            </select>
+          </div>
+          <div><label data-i18n="l_time">Preferred Time</label><input id="pTime" type="datetime-local" /></div>
+          <div style="grid-column:1/-1"><label data-i18n="l_notes">Symptoms / Notes</label><textarea id="pNotes" placeholder="Fever since 2 days…"></textarea></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn primary" onclick="bookAppt()" data-i18n="b_book">Book</button>
+          <button class="btn" onclick="openConsult()" data-i18n="b_join">Join Call (Demo)</button>
+        </div>
+        <p id="apptMsg" class="muted" style="margin-top:8px"></p>
+      </div>
+      <div class="card pad">
+        <h3 data-i18n="consult_doctor">Doctor Portal (Demo)</h3>
+        <div class="row">
+          <div><label data-i18n="l_lookup">Lookup by Patient</label><input id="lookup" placeholder="Search appointments" oninput="filterAppts(this.value)" /></div>
+        </div>
+        <div id="apptList" class="grid" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYMPTOM CHECKER -->
+  <section id="symptom">
+    <div class="title"><span class="dot"></span><h2 data-i18n="symptom_title">AI‑Assisted Symptom Checker</h2></div>
+    <div class="grid cols-2">
+      <div class="card pad">
+        <div class="row cols-2">
+          <div><label data-i18n="l_temp">Temperature (°C)</label><input id="sTemp" type="number" step="0.1" placeholder="37.0"/></div>
+          <div><label data-i18n="l_hr">Heart Rate (bpm)</label><input id="sHr" type="number" placeholder="72"/></div>
+          <div><label data-i18n="l_spo2">SpO₂ (%)</label><input id="sSp" type="number" placeholder="98"/></div>
+          <div><label data-i18n="l_sym">Symptoms</label><input id="sSym" placeholder="cough, headache"/></div>
+        </div>
+        <button class="btn primary" style="margin-top:10px" onclick="runChecker()" data-i18n="b_analyze">Analyze</button>
+        <div id="aiOut" style="margin-top:12px"></div>
+        <p class="muted" style="margin-top:8px" data-i18n="disclaimer">Not a diagnosis. For emergencies, use SOS or local services.</p>
+      </div>
+      <div class="card pad">
+        <h3 data-i18n="risk_title">Risk Signals</h3>
+        <div id="riskBadges" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HEALTH WALLET / RX -->
+  <section id="wallet">
+    <div class="title"><span class="dot"></span><h2 data-i18n="wallet_title">Digital Health Wallet & E‑Prescription</h2></div>
+    <div class="grid cols-2">
+      <div class="card pad">
+        <div class="row">
+          <div><label data-i18n="l_diag">Diagnosis</label><input id="rxDiag" placeholder="e.g., Viral Fever"/></div>
+          <div><label data-i18n="l_meds">Medicines</label><textarea id="rxMeds" placeholder="Paracetamol 650mg — 1 tab, TID, 3 days\nORS — 200ml after loose stools"></textarea></div>
+          <div class="row cols-2">
+            <div><label data-i18n="l_follow">Follow‑up (days)</label><input id="rxFollow" type="number" placeholder="7"/></div>
+            <div><label>Notes</label><input id="rxNotes" placeholder="Drink plenty of fluids"/></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="generateRX()" data-i18n="b_generate">Generate Rx</button>
+          <button class="btn" onclick="window.print()" data-i18n="b_print">Print / Save PDF</button>
+        </div>
+      </div>
+      <div class="card pad" id="rxPreview">
+        <h3>Telehealth.AI — ePrescription</h3>
+        <div class="muted" id="rxMeta"></div>
+        <hr style="border-color:rgba(148,163,184,.1)"/>
+        <div id="rxContent" style="white-space:pre-wrap;margin-top:8px"></div>
+        <canvas id="qr" width="120" height="120" style="margin-top:12px;border-radius:8px;background:#0b1220;border:1px solid rgba(148,163,184,.2)"></canvas>
+        <p class="muted" style="font-size:12px">Scan at pharmacy • Demo QR</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN / ANALYTICS -->
+  <section id="admin">
+    <div class="title"><span class="dot"></span><h2 data-i18n="admin_title">Admin Dashboard (Demo)</h2></div>
+    <div class="grid cols-3">
+      <div class="card pad">
+        <h3 data-i18n="kpi_consults">Consultations Today</h3>
+        <div style="font-size:36px;font-weight:700">24</div>
+        <div class="muted" data-i18n="kpi_vs">+12% vs yesterday</div>
+      </div>
+      <div class="card pad">
+        <h3 data-i18n="kpi_alerts">Auto Alerts (24h)</h3>
+        <div style="font-size:36px;font-weight:700;color:#f59e0b">7</div>
+        <div class="muted" data-i18n="kpi_trend">Mostly elevated HR</div>
+      </div>
+      <div class="card pad">
+        <h3 data-i18n="kpi_uptime">Platform Uptime</h3>
+        <div style="font-size:36px;font-weight:700;color:#22c55e">99.95%</div>
+        <div class="muted">SLA</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="container">
+  <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+    <span>© <span id="year"></span> Telehealth.AI</span>
+    <span class="muted">Demo UI • HIPAA/GDPR awareness • For hackathons & pitches</span>
+  </div>
+</footer>
+
+<!-- CONSULT MODAL (SIMULATED CALL) -->
+<div class="modal" id="consultModal" role="dialog" aria-modal="true" aria-labelledby="consultTitle">
+  <div class="panel card pad">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="consultTitle" data-i18n="call_title">Video Consultation (Demo)</h3>
+      <button class="btn" onclick="closeConsult()">✕</button>
+    </div>
+    <div class="grid cols-2" style="margin-top:10px">
+      <div class="card" style="height:220px;border-radius:12px;background:#0b1220;border:1px solid rgba(148,163,184,.2);display:grid;place-items:center">👩🏽‍⚕️ Doctor</div>
+      <div class="card" style="height:220px;border-radius:12px;background:#0b1220;border:1px solid rgba(148,163,184,.2);display:grid;place-items:center">🧑🏽 Patient</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+      <button class="btn">🎙️</button>
+      <button class="btn">🎥</button>
+      <button class="btn" style="border-color:rgba(239,68,68,.6)" onclick="closeConsult()">⏹ End</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = "http://127.0.0.1:5000/api";
+async function api(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+  // -------- Utilities
+  const $ = (q, el=document) => el.querySelector(q);
+  const $$ = (q, el=document) => [...el.querySelectorAll(q)];
+  const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2400); };
+  const goto = (hash) => { location.hash = hash; $$('a[data-nav]').forEach(a=>a.classList.toggle('active', a.getAttribute('href')===hash)); };
+
+  // -------- Live vitals (simulated waveform)
+  const vitalsCanvas = $('#vitals');
+  const ctx = vitalsCanvas.getContext('2d');
+  function drawVitals(){
+    const w = vitalsCanvas.width = vitalsCanvas.clientWidth; const h = vitalsCanvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.lineWidth = 2; ctx.strokeStyle = '#22c55e';
+    ctx.beginPath();
+    let x=0; const base=h*0.55; const amp=28; const step=6;
+    while(x<w){ const spike = Math.random()<0.06 ? -amp*1.6 : Math.sin(x*0.02)*amp; const y = base + spike + (Math.random()*6-3); ctx.lineTo(x,y); x+=step; }
+    ctx.stroke();
+  }
+  setInterval(()=>{ drawVitals(); // update KPIs
+    $('#hr').textContent = Math.round(65+Math.random()*12);
+    $('#spo2').textContent = Math.round(97+Math.random()*2);
+    const s = 110+Math.round(Math.random()*15); const d = 70+Math.round(Math.random()*8); $('#bp').textContent = `${s}/${d}`;
+  }, 1500);
+
+  // -------- Appointments (local demo store)
+  let APPTS = [];
+  async function bookAppt(){
+  const appt = {
+    id: Date.now(),
+    name: $('#pName').value || 'Guest',
+    age: $('#pAge').value || '-',
+    dept: $('#pDept').value,
+    time: $('#pTime').value || new Date().toISOString(),
+    notes: $('#pNotes').value
+  };
+  try {
+    await api("/appointments", { method: "POST", body: JSON.stringify(appt) });
+    toast('Appointment booked');
+    await loadAppts();                      // refresh list from backend
+    $('#apptMsg').textContent = `📅 Booked with ${appt.dept} for ${new Date(appt.time).toLocaleString()}`;
+  } catch (e) {
+    console.error(e);
+    toast('Booking failed');
+  }
+}
+
+  function renderAppts(list){
+    const c = $('#apptList'); c.innerHTML='';
+    list.forEach(a=>{
+      const card = document.createElement('div'); card.className='feature';
+      card.innerHTML = `<strong>${a.name}</strong> • ${a.dept}<br><span class="muted">${new Date(a.time).toLocaleString()}</span><br><span class="muted">${a.notes||''}</span>`;
+      c.appendChild(card);
+    })
+  }
+  function filterAppts(q){ q = (q||'').toLowerCase(); renderAppts(APPTS.filter(a=>JSON.stringify(a).toLowerCase().includes(q))); }
+
+  // -------- Symptom checker (rule-based demo)
+  function runChecker(){
+    const t = parseFloat($('#sTemp').value||0), hr = parseFloat($('#sHr').value||0), sp = parseFloat($('#sSp').value||0), sym = ($('#sSym').value||'').toLowerCase();
+    const risks = [];
+    if(t>=38) risks.push(['Fever', 'warn']);
+    if(hr>=100) risks.push(['Tachycardia', 'warn']);
+    if(sp<94) risks.push(['Low SpO₂', 'danger']);
+    if(sym.includes('chest')) risks.push(['Chest pain keyword', 'danger']);
+    if(sym.includes('cough') && t>=38) risks.push(['Flu-like pattern', 'warn']);
+    if(sym.includes('headache') && t<38 && sp>=95) risks.push(['Likely mild — hydrate & rest', 'ok']);
+
+    const out = $('#aiOut');
+    const level = risks.some(r=>r[1]==='danger') ? 'danger' : risks.some(r=>r[1]==='warn') ? 'warn' : 'ok';
+    out.innerHTML = `<div class="badge ${level}">Risk Level: ${level.toUpperCase()}</div>`;
+    const rb = $('#riskBadges'); rb.innerHTML='';
+    risks.forEach(([txt,cls])=>{ const b=document.createElement('span'); b.className=`badge ${cls}`; b.textContent = txt; rb.appendChild(b); });
+    if(level==='danger') toast('High risk detected. Consider SOS.');
+  }
+
+  // -------- ePrescription + QR (lightweight demo QR)
+  function generateRX(){
+    const meta = `Patient: ${$('#pName').value||'Guest'} • Dept: ${$('#pDept').value} • ${new Date().toLocaleString()}`;
+    $('#rxMeta').textContent = meta;
+    const text = `Diagnosis: ${$('#rxDiag').value}\n\nMedicines:\n${$('#rxMeds').value}\n\nFollow-up: ${$('#rxFollow').value||'-'} days\nNotes: ${$('#rxNotes').value||'-'}`;
+    $('#rxContent').textContent = text;
+    drawDemoQR(`RX|${meta}|${text}`);
+    toast('ePrescription generated');
+  }
+  function drawDemoQR(data){ // Not a real QR, just a hash pattern for demo
+    const c = $('#qr'), ctx = c.getContext('2d');
+    const n = 24, s = c.width/n; ctx.clearRect(0,0,c.width,c.height);
+    let hash=0; for(let i=0;i<data.length;i++){ hash = (hash*31 + data.charCodeAt(i))>>>0; }
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++){
+      const v = (hash ^ (x*73856093) ^ (y*19349663) ^ ((x*y+31)*83492791)) & 1;
+      if(v){ ctx.fillStyle = '#e2e8f0'; ctx.fillRect(x*s,y*s,s,s); }
+    }
+  }
+
+  // -------- Modal call
+  function openConsult(){ $('#consultModal').classList.add('open'); }
+  function closeConsult(){ $('#consultModal').classList.remove('open'); }
+
+  // -------- Language i18n (EN/HI/TE minimal)
+  const I18N = {
+    en:{
+      low_bandwidth:'Low Bandwidth', sos:'SOS', login:'Login', chip_access:'Accessible • Secure • AI‑Driven',
+      hero_title:'Healthcare that reaches you — wherever you are.', hero_body:'Video consults, real‑time vitals from wearables, AI symptom checks, e‑prescriptions, and a secure health wallet — built for cities and villages alike.',
+      cta_consult:'Start Consultation', cta_checker:'Try Symptom Checker', badge_secure:'End‑to‑End Encrypted', badge_low:'Optimized for Low Bandwidth', badge_compliance:'HIPAA/GDPR‑aware UI',
+      vitals_title:'Live Vitals (Demo)', vitals_note:'Connected to Google Fit / HealthKit / IoT (simulated).',
+      features:'Key Highlights', f_secure:'Secure Video & Audio', f_secure_d:'Remote consults with encrypted calls.', f_wear:'Wearables & IoT', f_wear_d:'Sync Google Fit, HealthKit, Fitbit, medical devices.', f_ai:'AI Symptom & Risk', f_ai_d:'Early alerts and prevention insights.', f_multi:'Multi‑Platform', f_multi_d:'Web + Android + iOS. Works on 2G/3G.', f_sos:'Emergency SOS', f_sos_d:'Auto alerts on abnormal vitals.', f_rx:'E‑Prescriptions', f_rx_d:'QR‑enabled Rx & secure health wallet.',
+      consult_title:'Virtual Consultation', consult_patient:'Patient Booking', consult_doctor:'Doctor Portal (Demo)', l_name:'Full Name', l_age:'Age', l_dept:'Speciality', l_time:'Preferred Time', l_notes:'Symptoms / Notes', l_lookup:'Lookup by Patient', b_book:'Book', b_join:'Join Call (Demo)',
+      symptom_title:'AI‑Assisted Symptom Checker', l_temp:'Temperature (°C)', l_hr:'Heart Rate (bpm)', l_spo2:'SpO₂ (%)', l_sym:'Symptoms', b_analyze:'Analyze', disclaimer:'Not a diagnosis. For emergencies, use SOS or local services.', risk_title:'Risk Signals',
+      wallet_title:'Digital Health Wallet & E‑Prescription', l_diag:'Diagnosis', l_meds:'Medicines', l_follow:'Follow‑up (days)', b_generate:'Generate Rx', b_print:'Print / Save PDF',
+      admin_title:'Admin Dashboard (Demo)', kpi_consults:'Consultations Today', kpi_vs:'+12% vs yesterday', kpi_alerts:'Auto Alerts (24h)', kpi_trend:'Mostly elevated HR', kpi_uptime:'Platform Uptime'
+    },
+    hi:{
+      low_bandwidth:'लो‑बैंडविड्थ', sos:'आपातकाल', login:'लॉगिन', chip_access:'सुलभ • सुरक्षित • एआई‑संचालित',
+      hero_title:'स्वास्थ्य सेवा जो आपको जहाँ भी हैं वहाँ पहुँचती है।', hero_body:'वीडियो परामर्श, पहनने योग्य उपकरणों से रीयल‑टाइम संकेत, एआई लक्षण जाँच, ई‑प्रिस्क्रिप्शन और सुरक्षित हेल्थ वॉलेट — शहरों और गाँवों दोनों के लिए।',
+      cta_consult:'परामर्श शुरू करें', cta_checker:'लक्षण चेकर आज़माएँ', badge_secure:'एंड‑टू‑एंड एन्क्रिप्टेड', badge_low:'लो‑बैंडविड्थ के लिए अनुकूलित', badge_compliance:'HIPAA/GDPR‑सचेत UI',
+      vitals_title:'लाइव संकेत (डेमो)', vitals_note:'गूगल फिट / हेल्थकिट / IoT से जुड़ा (सिम्युलेटेड)।',
+      features:'मुख्य विशेषताएँ', f_secure:'सुरक्षित वीडियो व ऑडियो', f_secure_d:'एन्क्रिप्टेड कॉल के साथ रिमोट परामर्श।', f_wear:'वेयरेबल्स व IoT', f_wear_d:'Google Fit, HealthKit, Fitbit, मेडिकल डिवाइस।', f_ai:'एआई लक्षण व जोखिम', f_ai_d:'शुरुआती चेतावनी व रोकथाम अंतर्दृष्टि।', f_multi:'मल्टी‑प्लैटफॉर्म', f_multi_d:'वेब + एंड्रॉइड + iOS. 2G/3G पर काम करता है।', f_sos:'आपातकाल SOS', f_sos_d:'असामान्य संकेतों पर स्वतः अलर्ट।', f_rx:'ई‑प्रिस्क्रिप्शन', f_rx_d:'QR‑सक्षम Rx और सुरक्षित वॉलेट।',
+      consult_title:'वर्चुअल परामर्श', consult_patient:'रोगी बुकिंग', consult_doctor:'डॉक्टर पोर्टल (डेमो)', l_name:'पूरा नाम', l_age:'आयु', l_dept:'विशेषता', l_time:'पसंदीदा समय', l_notes:'लक्षण / नोट्स', l_lookup:'रोगी द्वारा खोजें', b_book:'बुक करें', b_join:'कॉल जॉइन करें (डेमो)',
+      symptom_title:'एआई‑सहायता लक्षण चेकर', l_temp:'तापमान (°C)', l_hr:'हृदयगति (bpm)', l_spo2:'SpO₂ (%)', l_sym:'लक्षण', b_analyze:'विश्लेषण', disclaimer:'यह निदान नहीं है। आपातकाल में SOS या स्थानीय सेवाएँ उपयोग करें।', risk_title:'जोखिम संकेत',
+      wallet_title:'डिजिटल हेल्थ वॉलेट व ई‑प्रिस्क्रिप्शन', l_diag:'निदान', l_meds:'दवाएँ', l_follow:'फॉलो‑अप (दिन)', b_generate:'Rx बनाएँ', b_print:'प्रिंट / PDF',
+      admin_title:'एडमिन डैशबोर्ड (डेमो)', kpi_consults:'आज की परामर्श', kpi_vs:'कल से +12%', kpi_alerts:'ऑटो अलर्ट (24h)', kpi_trend:'ज्यादातर उच्च HR', kpi_uptime:'प्लेटफ़ॉर्म अपटाइम'
+    },
+    te:{
+      low_bandwidth:'లో‑బ్యాండ్విడ్', sos:'SOS', login:'లాగిన్', chip_access:'సులభం • సెక్యూర్ • AI',
+      hero_title:'మీరు ఎక్కడ ఉన్నా—ఆరోగ్యం అక్కడికే.', hero_body:'వీడియో కన్సల్ట్‌లు, వేర్‌బుల్స్ నుంచి రియల్‑టైమ్ వైటల్స్, AI సింప్టమ్ చెక్, e‑ప్రిస్క్రిప్షన్, సెక్యూర్ హెల్త్ వాలెట్ — నగరాలకు, గ్రామాలకు.',
+      cta_consult:'కన్సల్ట్ ప్రారంభించండి', cta_checker:'సింప్టమ్ చెకర్ ట్రై చేయండి', badge_secure:'ఎండ్‑టు‑ఎండ్ ఎన్క్రిప్ట్', badge_low:'లో‑బ్యాండ్విడ్‌కు ఆప్టిమైజ్', badge_compliance:'HIPAA/GDPR అవగాహన UI',
+      vitals_title:'లైవ్ వైటల్స్ (డెమో)', vitals_note:'Google Fit / HealthKit / IoT (సిమ్యులేటెడ్).',
+      features:'ప్రధాన హైలైట్స్', f_secure:'సెక్యూర్ వీడియో & ఆడియో', f_secure_d:'ఎన్క్రిప్టెడ్ కాల్స్‌తో రిమోట్ కన్సల్ట్.', f_wear:'వేర్‌బుల్స్ & IoT', f_wear_d:'Google Fit, HealthKit, Fitbit, మెడికల్ డివైసెస్.', f_ai:'AI సింప్టమ్ & రిస్క్', f_ai_d:'పురోగమన హెచ్చరికలు.', f_multi:'మల్టీ‑ప్లాట్‌ఫారం', f_multi_d:'Web + Android + iOS. 2G/3Gలో పనిచేస్తుంది.', f_sos:'ఎమర్జెన్సీ SOS', f_sos_d:'అసాధారణ వైటల్స్‌పై అలర్ట్స్.', f_rx:'e‑ప్రిస్క్రిప్షన్', f_rx_d:'QR‑ఎనేబుల్డ్ Rx & సెక్యూర్ వాలెట్.',
+      consult_title:'వర్చువల్ కన్సల్టేషన్', consult_patient:'పేషెంట్ బుకింగ్', consult_doctor:'డాక్టర్ పోర్టల్ (డెమో)', l_name:'పూర్తి పేరు', l_age:'వయసు', l_dept:'స్పెషాలిటీ', l_time:'ఇష్టమైన సమయం', l_notes:'లక్షణాలు / నోట్లు', l_lookup:'పేషెంట్ ద్వారా సెర్చ్', b_book:'బుక్', b_join:'కాల్ జాయిన్ (డెమో)',
+      symptom_title:'AI‑అసిస్టెడ్ సింప్టమ్ చెకర్', l_temp:'టెంపరేచర్ (°C)', l_hr:'హార్ట్ రేట్ (bpm)', l_spo2:'SpO₂ (%)', l_sym:'లక్షణాలు', b_analyze:'విశ్లేషణ', disclaimer:'ఇది డయగ్నోసిస్ కాదు. అత్యవసరంలో SOS ఉపయోగించండి.', risk_title:'రిస్క్ సిగ్నల్స్',
+      wallet_title:'డిజిటల్ హెల్త్ వాలెట్ & e‑ప్రిస్క్రిప్షన్', l_diag:'డయగ్నోసిస్', l_meds:'మెడిసిన్స్', l_follow:'ఫాలో‑అప్ (రోజులు)', b_generate:'Rx జనరేట్', b_print:'ప్రింట్ / PDF',
+      admin_title:'అడ్మిన్ డాష్‌బోర్డ్ (డెమో)', kpi_consults:'నేటి కన్సల్ట్‌లు', kpi_vs:'నిన్నటితో పోలిస్తే +12%', kpi_alerts:'ఆటో అలర్ట్స్ (24h)', kpi_trend:'ఎక్కువగా HR', kpi_uptime:'ప్లాట్‌ఫామ్ అప్టైమ్'
+    }
+  };
+  function setLang(lang){ const dict=I18N[lang]||I18N.en; $$('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(dict[k]) el.textContent = dict[k]; }); localStorage.setItem('lang', lang); toast(`Language: ${lang}`); }
+  $('#lang').addEventListener('change', e=> setLang(e.target.value));
+
+  // -------- Low bandwidth toggle
+  let lowBW=false; $('#lowBandwidth').addEventListener('click', ()=>{ lowBW=!lowBW; document.body.classList.toggle('lowbw', lowBW); if(lowBW){ vitalsCanvas.style.display='none'; $('.pulse')?.classList.remove('pulse'); } else { vitalsCanvas.style.display='block'; $('#sos').classList.add('pulse'); } toast(lowBW? 'Low-bandwidth ON':'Low-bandwidth OFF'); });
+
+  // -------- SOS
+  $('#sos').addEventListener('click', ()=>{ toast('SOS triggered — notifying emergency contacts (demo)'); });
+
+  // -------- Init
+  window.addEventListener('load', ()=>{
+    $('#year').textContent = new Date().getFullYear();
+    setLang(localStorage.getItem('lang')||'en');
+    if(location.hash) goto(location.hash); else goto('#home');
+    renderAppts(APPTS);
+  });
+  
+</script>
+</body>
+</html>
